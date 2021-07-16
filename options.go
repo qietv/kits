@@ -6,9 +6,8 @@ import (
 	"git.qietv.work/go-public/kits/utils"
 	"git.qietv.work/go-public/qgrpc"
 	"google.golang.org/grpc"
+	"net"
 	"os"
-	"strconv"
-	"strings"
 )
 
 type QGrpc struct {
@@ -86,6 +85,9 @@ func newFuncOption(f func(*options)) *funcOption {
 //Metrics server metrics Info
 func Metrics(opts *metrics.Metric) Option {
 	return newFuncOption(func(o *options) {
+		if opts == nil {
+			return
+		}
 		o.Metric = metrics.DefaultMetrics
 		o.Metric.Collectors = opts.Collectors
 		if opts.Path != "" {
@@ -97,14 +99,10 @@ func Metrics(opts *metrics.Metric) Option {
 		o.Metric.Handler = opts.Handler
 		if opts.Port != 0 {
 			o.Metric.Port = opts.Port
-		}else if opts.Listen != "" {
+		} else if opts.Listen != "" {
 			o.Metric.Listen = opts.Listen
-			ipport := strings.Split(":", opts.Listen)
-			if len(ipport) == 2 {
-				port,_ := strconv.Atoi(ipport[1])
-				if port > 0 && port < 65536 {
-					o.Metric.Port =  port
-				}
+			if tcpAddrs, e := net.ResolveTCPAddr("tcp", opts.Listen); e == nil {
+				o.Metric.Port = tcpAddrs.Port
 			}
 		}
 		o.Metric.NodeName = opts.NodeName

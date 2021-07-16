@@ -8,7 +8,7 @@ import (
 )
 
 type Consul struct {
-	Endpoint  string
+	Endpoint   string
 	Datacenter string
 }
 
@@ -29,11 +29,11 @@ func NewConsul(addr, dataCenter, serverID string) *ConsulClient {
 	})
 	return &ConsulClient{
 		client: client,
-		ID: serverID,
+		ID:     serverID,
 	}
 }
 
-func (d *ConsulClient) RegisterConsul(serviceName, host string, port, metricPort int,  tags []string, metadata map[string]string) (cancelFunc context.CancelFunc) {
+func (d *ConsulClient) RegisterConsul(serviceName, host string, port, metricPort int, tags []string, metadata map[string]string) (cancelFunc context.CancelFunc) {
 	var (
 		id      string
 		service *consul.AgentServiceRegistration

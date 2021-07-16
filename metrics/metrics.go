@@ -16,18 +16,18 @@ var (
 var DefaultMetrics = &Metric{
 	Path:    "/metrics",
 	Address: utils.GetIP(),
-	Port: 9909,
+	Port:    9909,
 }
 
 type Metric struct {
-	NodeName   string
-	Path       string
-	Address    string
-	Port       int
-	Handler    http.Handler
-	Listen     string
-	Collectors []prometheus.Collector
-	server     *http.Server
+	NodeName   string                 `yaml:"node"`
+	Path       string                 `yaml:"path"`
+	Address    string                 `yaml:"address"`
+	Port       int                    `yaml:"port"`
+	Listen     string                 `yaml:"listen"`
+	Handler    http.Handler           `yaml:"-"`
+	Collectors []prometheus.Collector `yaml:"-"`
+	server     *http.Server           `yaml:"-"`
 }
 
 func InitMetrics(opts *Metric) {
