@@ -52,7 +52,6 @@ func New(opt ...Option) (s *Server, err error) {
 			s.disCancel = discovery.NewConsul(opts.consul.Endpoint, opts.consul.Datacenter, opts.id).RegisterConsul(opts.name, opts.host, opts.port, 0, tags, meta)
 		}
 	}
-
 	if opts.Metric != nil {
 		if opts.build != nil {
 			prometheus.Register(prometheus.NewGauge(prometheus.GaugeOpts{
@@ -62,7 +61,9 @@ func New(opt ...Option) (s *Server, err error) {
 				ConstLabels: map[string]string{"build": opts.build.BuildTime, "app_version": opts.build.AppVersion, "git_commit": opts.build.GitVersion, "go_version": runtime.Version()},
 			}))
 		}
-		metrics.Register(qgrpc.Metrics)
+		if qgrpc.Metrics != nil {
+			metrics.Register(qgrpc.Metrics)
+		}
 		metrics.Register(opts.Metric.Collectors...)
 		metrics.InitMetrics(opts.Metric)
 	}
