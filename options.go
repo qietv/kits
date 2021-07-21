@@ -1,6 +1,7 @@
 package kits
 
 import (
+	"fmt"
 	"git.qietv.work/go-public/kits/discovery"
 	"git.qietv.work/go-public/kits/metrics"
 	"git.qietv.work/go-public/kits/utils"
@@ -8,6 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"net"
 	"os"
+	"strings"
 )
 
 type QGrpc struct {
@@ -20,7 +22,7 @@ type BuildInfo struct {
 	GitVersion string
 	BuildTime  string
 }
-type Environment byte
+type Environment int
 
 const (
 	Develop Environment = iota
@@ -41,9 +43,29 @@ func (e Environment) String() string {
 	case Preview:
 		return "pre"
 	case Online:
-		return "ol"
+		return "online"
 	}
 	return "unknown"
+}
+
+func (e *Environment) Set(env string) error {
+	switch strings.ToLower(env) {
+	case "dev", "develop":
+		*e = Develop
+	case "test":
+		*e = Test
+	case "canary":
+		*e = Canary
+	case "pre":
+		*e = Preview
+	case "online", "prod":
+		*e = Online
+	case "":
+		*e = Develop
+	default:
+		return fmt.Errorf("Not Support (%s)", env)
+	}
+	return nil
 }
 
 type options struct {
@@ -158,6 +180,11 @@ func Build(info *BuildInfo) Option {
 	})
 }
 
+func Env(env Environment) Option {
+	return newFuncOption(func(o *options) {
+		o.Env = env
+	})
+}
 func ShutdownFunc(fn func(s os.Signal) error) Option {
 	return newFuncOption(func(o *options) {
 		o.shutdownFunc = fn
