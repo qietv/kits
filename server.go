@@ -66,7 +66,6 @@ func New(opt ...Option) (s *Server, err error) {
 		if opts.Grpc.GrpcRegisterFunc == nil {
 			panic("register must be set")
 		}
-		println("1111", opts.Grpc.Conf.Addr)
 		s.Grpc, err = qgrpc.New(opts.Grpc.Conf, opts.Grpc.GrpcRegisterFunc)
 		if err != nil {
 			return
