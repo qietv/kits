@@ -56,7 +56,7 @@ func New(opt ...Option) (s *Server, err error) {
 	if opts.Env == 0 {
 		opts.Env = env
 	}
-	if opts.consul == nil {
+	if opts.consul == nil && consulAddr != "" && datacenter != ""{
 		opts.consul = &discovery.Consul{
 			Endpoint:   consulAddr,
 			Datacenter: datacenter,
@@ -66,6 +66,7 @@ func New(opt ...Option) (s *Server, err error) {
 		if opts.Grpc.GrpcRegisterFunc == nil {
 			panic("register must be set")
 		}
+		println("1111", opts.Grpc.Conf.Addr)
 		s.Grpc, err = qgrpc.New(opts.Grpc.Conf, opts.Grpc.GrpcRegisterFunc)
 		if err != nil {
 			return
