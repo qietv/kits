@@ -26,7 +26,7 @@ var (
 func init() {
 	flag.StringVar(&serverId, "sid", os.Getenv("SERVER_ID"), "server id also usage env `SERVER_ID`")
 	if serverId == "" {
-		serverId ,_ = os.Hostname()
+		serverId, _ = os.Hostname()
 	}
 	flag.StringVar(&consulAddr, "consul.addr", os.Getenv("CONSUL_ADDR"), "consul register address also usage env `CONSUL_ADDR`")
 	flag.StringVar(&datacenter, "datacenter", os.Getenv("DATACENTER"), "consul datacenter  also env `DATACENTER`")
@@ -56,7 +56,7 @@ func New(opt ...Option) (s *Server, err error) {
 	if opts.Env == 0 {
 		opts.Env = env
 	}
-	if opts.consul == nil && consulAddr != "" && datacenter != ""{
+	if opts.consul == nil && consulAddr != "" && datacenter != "" {
 		opts.consul = &discovery.Consul{
 			Endpoint:   consulAddr,
 			Datacenter: datacenter,

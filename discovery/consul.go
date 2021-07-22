@@ -71,8 +71,7 @@ func (d *ConsulClient) RegisterConsul(serviceName, host string, port, metricPort
 		Weights:           nil,
 		Check: &consul.AgentServiceCheck{
 			Interval: "30s",
-			GRPC:     fmt.Sprintf("%s:%d", host, port),
-			//DeregisterCriticalServiceAfter: "60s",
+			GRPC:     fmt.Sprintf("%s:%d/%s", host, port, serviceName),
 		},
 	}
 	ctx, cancel := context.WithCancel(context.Background())
