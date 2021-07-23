@@ -114,7 +114,6 @@ func New(opt ...Option) (s *Server, err error) {
 	}
 
 	server = s
-	println("====<>", opts.logger, s.logger)
 	s.logger.Info(fmt.Sprintf("%s server start.", opts.name))
 	s.ShutdownHook()
 	return
