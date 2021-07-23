@@ -3,7 +3,7 @@ package discovery
 import (
 	"context"
 	"fmt"
-	log "git.qietv.work/go-public/logkit"
+	"git.qietv.work/go-public/kits/utils"
 	consul "github.com/hashicorp/consul/api"
 )
 
@@ -76,7 +76,7 @@ func (d *ConsulClient) RegisterConsul(serviceName, host string, port, metricPort
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	if err = agent.ServiceRegister(service); err != nil {
-		log.Errorf("register comet fail, on: %s", err.Error())
+		utils.GetLogger().Error("register comet fail, on: %s", err.Error())
 		cancel()
 		return
 	}
@@ -91,7 +91,7 @@ func (d *ConsulClient) RegisterConsul(serviceName, host string, port, metricPort
 			select {
 			case <-ctx.Done():
 				err = agent.ServiceDeregister(service.ID)
-				log.Infof("service deregister, %#v", err)
+				utils.GetLogger().Info("service deregister, %#v", err)
 				ch <- struct{}{}
 				return
 			}

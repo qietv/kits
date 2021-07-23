@@ -2,7 +2,6 @@ package metrics
 
 import (
 	"git.qietv.work/go-public/kits/utils"
-	log "git.qietv.work/go-public/logkit"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -56,7 +55,7 @@ func InitMetrics(opts *Metric) {
 		}
 		go func() {
 			if err := opts.server.ListenAndServe(); err != nil {
-				log.Errorf("metrics listen fail, %s", err.Error())
+				utils.GetLogger().Info("metrics listen fail, %s", err.Error())
 			}
 		}()
 	}

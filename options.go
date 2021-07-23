@@ -71,14 +71,16 @@ func (e *Environment) Set(env string) error {
 type options struct {
 	Metric       *metrics.Metric
 	consul       *discovery.Consul
-	Grpc         *QGrpc
+	debug        bool
 	id           string
 	name         string
 	host         string
 	port         int
 	build        *BuildInfo
 	Env          Environment
+	Grpc         *QGrpc
 	shutdownFunc func(s os.Signal) error
+	logger       utils.Logger
 }
 
 var defaultOptions = options{
@@ -179,10 +181,23 @@ func Build(info *BuildInfo) Option {
 		o.build = info
 	})
 }
-
+//Env server run environment
 func Env(env Environment) Option {
 	return newFuncOption(func(o *options) {
 		o.Env = env
+	})
+}
+//Debug server debug or false, debug will run pprof on http 9910
+func Debug(debug bool) Option {
+	return newFuncOption(func(o *options) {
+		o.debug = debug
+	})
+}
+
+//Logger server logger
+func Logger(logger utils.Logger) Option {
+	return newFuncOption(func(o *options) {
+		o.logger = logger
 	})
 }
 func ShutdownFunc(fn func(s os.Signal) error) Option {

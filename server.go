@@ -2,9 +2,10 @@ package kits
 
 import (
 	"flag"
+	"fmt"
 	"git.qietv.work/go-public/kits/discovery"
 	"git.qietv.work/go-public/kits/metrics"
-	"git.qietv.work/go-public/logkit"
+	"git.qietv.work/go-public/kits/utils"
 	"git.qietv.work/go-public/qgrpc"
 	"github.com/prometheus/client_golang/prometheus"
 	"log"
@@ -42,6 +43,7 @@ func init() {
 type Server struct {
 	Grpc      *qgrpc.Server
 	disCancel func()
+	logger    utils.Logger
 }
 
 func New(opt ...Option) (s *Server, err error) {
@@ -50,11 +52,13 @@ func New(opt ...Option) (s *Server, err error) {
 	for _, o := range opt {
 		o.apply(&opts)
 	}
+	if opts.logger == nil {
+		opts.logger = utils.NewSimpleLogger()
+	}
+	s.logger = opts.logger
+	utils.SetLogger(s.logger)
 	if opts.id == "" {
 		opts.id = serverId
-	}
-	if opts.Env == 0 {
-		opts.Env = env
 	}
 	if opts.consul == nil && consulAddr != "" && datacenter != "" {
 		opts.consul = &discovery.Consul{
@@ -65,6 +69,13 @@ func New(opt ...Option) (s *Server, err error) {
 	if opts.Grpc != nil {
 		if opts.Grpc.GrpcRegisterFunc == nil {
 			panic("register must be set")
+		}
+		if opts.Grpc.Conf == nil {
+			err = fmt.Errorf("grpc conf empty")
+			return
+		}
+		if opts.Grpc.Conf.Name == "" {
+			opts.Grpc.Conf.Name = opts.name
 		}
 		s.Grpc, err = qgrpc.New(opts.Grpc.Conf, opts.Grpc.GrpcRegisterFunc)
 		if err != nil {
@@ -103,12 +114,13 @@ func New(opt ...Option) (s *Server, err error) {
 	}
 
 	server = s
-	logkit.Infof("%s server start.", opts.name)
-	ShutdownHook()
+	println("====<>", opts.logger, s.logger)
+	s.logger.Info(fmt.Sprintf("%s server start.", opts.name))
+	s.ShutdownHook()
 	return
 }
 
-func ShutdownHook() {
+func (srv *Server) ShutdownHook() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
 	for {
@@ -119,7 +131,7 @@ func ShutdownHook() {
 			if server.disCancel != nil {
 				server.disCancel()
 			}
-			logkit.Infof("%s-server exit {id: %s host:%s port:%d}", opts.name, opts.id, opts.host, opts.port)
+			srv.logger.Info(fmt.Sprintf("%s-server exit {id: %s host:%s port:%d}", opts.name, opts.id, opts.host, opts.port))
 			if opts.shutdownFunc != nil {
 				opts.shutdownFunc(s)
 			}
