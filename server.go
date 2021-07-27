@@ -90,10 +90,12 @@ func New(opt ...Option) (s *Server, err error) {
 
 		if opts.Metric != nil {
 			tags = append(tags, "metrics")
-			meta["build_time"] = opts.build.BuildTime
-			meta["app_version"] = opts.build.AppVersion
-			meta["go_version"] = opts.build.GoVersion
-			meta["git_commit"] = opts.build.GitVersion
+			if opts.build != nil {
+				meta["build_time"] = opts.build.BuildTime
+				meta["app_version"] = opts.build.AppVersion
+				meta["go_version"] = opts.build.GoVersion
+				meta["git_commit"] = opts.build.GitVersion
+			}
 			//meta["__meta_consul_service_id"] = opts.Metric.NodeName
 			//meta["__meta_consul_address"] = "172.17.3.188:9909"
 			s.disCancel = discovery.NewConsul(opts.consul.Endpoint, opts.consul.Datacenter, opts.id).RegisterConsul(opts.name, opts.host, opts.port, opts.Metric.Port, tags, meta)
