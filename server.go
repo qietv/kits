@@ -132,7 +132,9 @@ func (srv *Server) ShutdownHook() {
 		s := <-c
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
-			server.Grpc.GracefulStop()
+			if server.Grpc != nil{
+				server.Grpc.GracefulStop()
+			}
 			if server.disCancel != nil {
 				server.disCancel()
 			}
