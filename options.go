@@ -2,10 +2,10 @@ package kits
 
 import (
 	"fmt"
-	"git.qietv.work/go-public/kits/discovery"
-	"git.qietv.work/go-public/kits/metrics"
-	"git.qietv.work/go-public/kits/utils"
-	"git.qietv.work/go-public/qgrpc"
+	"github.com/qietv/qgrpc"
+	"github.com/qietv/kits/discovery"
+	"github.com/qietv/kits/metrics"
+	"github.com/qietv/kits/utils"
 	"google.golang.org/grpc"
 	"net"
 	"os"
@@ -181,12 +181,14 @@ func Build(info *BuildInfo) Option {
 		o.build = info
 	})
 }
+
 //Env server run environment
 func Env(env Environment) Option {
 	return newFuncOption(func(o *options) {
 		o.Env = env
 	})
 }
+
 //Debug server debug or false, debug will run pprof on http 9910
 func Debug(debug bool) Option {
 	return newFuncOption(func(o *options) {

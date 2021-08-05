@@ -1,10 +1,10 @@
 package metrics
 
 import (
-	"git.qietv.work/go-public/kits/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/qietv/kits/utils"
 	"net/http"
 	"sync"
 )

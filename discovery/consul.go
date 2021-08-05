@@ -3,8 +3,8 @@ package discovery
 import (
 	"context"
 	"fmt"
-	"git.qietv.work/go-public/kits/utils"
 	consul "github.com/hashicorp/consul/api"
+	"github.com/qietv/kits/utils"
 )
 
 type Consul struct {

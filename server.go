@@ -3,11 +3,11 @@ package kits
 import (
 	"flag"
 	"fmt"
-	"git.qietv.work/go-public/kits/discovery"
-	"git.qietv.work/go-public/kits/metrics"
-	"git.qietv.work/go-public/kits/utils"
-	"git.qietv.work/go-public/qgrpc"
+	"github.com/qietv/qgrpc"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/qietv/kits/discovery"
+	"github.com/qietv/kits/metrics"
+	"github.com/qietv/kits/utils"
 	"log"
 	"os"
 	"os/signal"
@@ -132,7 +132,7 @@ func (srv *Server) ShutdownHook() {
 		s := <-c
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
-			if server.Grpc != nil{
+			if server.Grpc != nil {
 				server.Grpc.GracefulStop()
 			}
 			if server.disCancel != nil {
