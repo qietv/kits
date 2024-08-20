@@ -1,6 +1,9 @@
 package utils
 
-import "github.com/hanskorg/logkit"
+import (
+	"github.com/hanskorg/logkit"
+	_ "log"
+)
 
 var (
 	logger Logger
@@ -13,7 +16,8 @@ type Logger interface {
 	Error(format string, args ...interface{})
 }
 
-type SimpleLogger struct{}
+type SimpleLogger struct {
+}
 
 func NewSimpleLogger() Logger {
 	logger = &SimpleLogger{}

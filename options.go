@@ -2,10 +2,10 @@ package kits
 
 import (
 	"fmt"
-	"github.com/qietv/qgrpc"
 	"github.com/qietv/kits/discovery"
 	"github.com/qietv/kits/metrics"
 	"github.com/qietv/kits/utils"
+	"github.com/qietv/qgrpc"
 	"google.golang.org/grpc"
 	"net"
 	"os"
@@ -15,6 +15,7 @@ import (
 type QGrpc struct {
 	Conf             *qgrpc.Config
 	GrpcRegisterFunc func(grpcServer *grpc.Server)
+	Options          []grpc.ServerOption
 }
 type BuildInfo struct {
 	GoVersion  string
@@ -69,18 +70,19 @@ func (e *Environment) Set(env string) error {
 }
 
 type options struct {
-	Metric       *metrics.Metric
-	consul       *discovery.Consul
-	debug        bool
-	id           string
-	name         string
-	host         string
-	port         int
-	build        *BuildInfo
-	Env          Environment
-	Grpc         *QGrpc
-	shutdownFunc func(s os.Signal) error
-	logger       utils.Logger
+	Metric          *metrics.Metric
+	consul          *discovery.Consul
+	debug           bool
+	id              string
+	name            string
+	host            string
+	port            int
+	build           *BuildInfo
+	Env             Environment
+	Grpc            *QGrpc
+	GrpcInterecpter *grpc.ServerOption
+	shutdownFunc    func(s os.Signal) error
+	logger          utils.Logger
 }
 
 var defaultOptions = options{
@@ -106,7 +108,7 @@ func newFuncOption(f func(*options)) *funcOption {
 	}
 }
 
-//Metrics server metrics Info
+// Metrics server metrics Info
 func Metrics(opts *metrics.Metric) Option {
 	return newFuncOption(func(o *options) {
 		if opts == nil {
@@ -133,70 +135,70 @@ func Metrics(opts *metrics.Metric) Option {
 	})
 }
 
-//Grpc server grpc server Info
+// Grpc server grpc server Info
 func Grpc(opts *QGrpc) Option {
 	return newFuncOption(func(o *options) {
 		o.Grpc = opts
 	})
 }
 
-//Consul server Consul discovery Info
+// Consul server Consul discovery Info
 func Consul(opts *discovery.Consul) Option {
 	return newFuncOption(func(o *options) {
 		o.consul = opts
 	})
 }
 
-//Host server main transport ip
+// Host server main transport ip
 func Host(host string) Option {
 	return newFuncOption(func(o *options) {
 		o.host = host
 	})
 }
 
-//Port server main transport port
+// Port server main transport port
 func Port(port int) Option {
 	return newFuncOption(func(o *options) {
 		o.port = port
 	})
 }
 
-//Name server name
+// Name server name
 func Name(name string) Option {
 	return newFuncOption(func(o *options) {
 		o.name = name
 	})
 }
 
-//ServerID server id
+// ServerID server id
 func ServerID(id string) Option {
 	return newFuncOption(func(o *options) {
 		o.id = id
 	})
 }
 
-//Build server build info
+// Build server build info
 func Build(info *BuildInfo) Option {
 	return newFuncOption(func(o *options) {
 		o.build = info
 	})
 }
 
-//Env server run environment
+// Env server run environment
 func Env(env Environment) Option {
 	return newFuncOption(func(o *options) {
 		o.Env = env
 	})
 }
 
-//Debug server debug or false, debug will run pprof on http 9910
+// Debug server debug or false, debug will run pprof on http 9910
 func Debug(debug bool) Option {
 	return newFuncOption(func(o *options) {
 		o.debug = debug
 	})
 }
 
-//Logger server logger
+// Logger server logger
 func Logger(logger utils.Logger) Option {
 	return newFuncOption(func(o *options) {
 		o.logger = logger

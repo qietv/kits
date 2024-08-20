@@ -3,11 +3,11 @@ package kits
 import (
 	"flag"
 	"fmt"
-	"github.com/qietv/qgrpc"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/qietv/kits/discovery"
 	"github.com/qietv/kits/metrics"
 	"github.com/qietv/kits/utils"
+	"github.com/qietv/qgrpc"
 	"log"
 	"os"
 	"os/signal"
@@ -77,7 +77,7 @@ func New(opt ...Option) (s *Server, err error) {
 		if opts.Grpc.Conf.Name == "" {
 			opts.Grpc.Conf.Name = opts.name
 		}
-		s.Grpc, err = qgrpc.New(opts.Grpc.Conf, opts.Grpc.GrpcRegisterFunc)
+		s.Grpc, err = qgrpc.New(opts.Grpc.Conf, opts.Grpc.GrpcRegisterFunc, opts.Grpc.Options...)
 		if err != nil {
 			return
 		}
