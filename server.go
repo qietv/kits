@@ -3,16 +3,17 @@ package kits
 import (
 	"flag"
 	"fmt"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/qietv/kits/discovery"
-	"github.com/qietv/kits/metrics"
-	"github.com/qietv/kits/utils"
-	"github.com/qietv/qgrpc"
 	"log"
 	"os"
 	"os/signal"
 	"runtime"
 	"syscall"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/qietv/kits/discovery"
+	"github.com/qietv/kits/metrics"
+	"github.com/qietv/kits/utils"
+	"github.com/qietv/qgrpc"
 )
 
 var (
@@ -120,9 +121,14 @@ func New(opt ...Option) (s *Server, err error) {
 	}
 
 	server = s
+	return
+}
+func (s *Server) Start() {
+	for _, transport := range opts.transports {
+		go transport.Start()
+	}
 	s.logger.Info(fmt.Sprintf("%s server start.", opts.name))
 	s.ShutdownHook()
-	return
 }
 
 func (srv *Server) ShutdownHook() {
@@ -141,6 +147,9 @@ func (srv *Server) ShutdownHook() {
 			srv.logger.Info(fmt.Sprintf("%s-server exit {id: %s host:%s port:%d}", opts.name, opts.id, opts.host, opts.port))
 			if opts.shutdownFunc != nil {
 				opts.shutdownFunc(s)
+			}
+			for _, transport := range opts.transports {
+				transport.Stop()
 			}
 			return
 		case syscall.SIGHUP:

@@ -2,14 +2,15 @@ package kits
 
 import (
 	"fmt"
+	"net"
+	"os"
+	"strings"
+
 	"github.com/qietv/kits/discovery"
 	"github.com/qietv/kits/metrics"
 	"github.com/qietv/kits/utils"
 	"github.com/qietv/qgrpc"
 	"google.golang.org/grpc"
-	"net"
-	"os"
-	"strings"
 )
 
 type QGrpc struct {
@@ -69,6 +70,11 @@ func (e *Environment) Set(env string) error {
 	return nil
 }
 
+type Transport interface {
+	Start() error
+	Stop() error
+}
+
 type options struct {
 	Metric          *metrics.Metric
 	consul          *discovery.Consul
@@ -78,6 +84,7 @@ type options struct {
 	host            string
 	port            int
 	build           *BuildInfo
+	transports      []Transport
 	Env             Environment
 	Grpc            *QGrpc
 	GrpcInterecpter *grpc.ServerOption
@@ -202,6 +209,13 @@ func Debug(debug bool) Option {
 func Logger(logger utils.Logger) Option {
 	return newFuncOption(func(o *options) {
 		o.logger = logger
+	})
+}
+
+// Transport server transport
+func Srv(transport Transport) Option {
+	return newFuncOption(func(o *options) {
+		o.transports = append(o.transports, transport)
 	})
 }
 func ShutdownFunc(fn func(s os.Signal) error) Option {
