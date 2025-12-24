@@ -78,7 +78,7 @@ func New(opt ...Option) (s *Server, err error) {
 		if opts.Grpc.Conf.Name == "" {
 			opts.Grpc.Conf.Name = opts.name
 		}
-		s.Grpc, err = qgrpc.New(opts.Grpc.Conf, opts.Grpc.GrpcRegisterFunc, opts.Grpc.Options...)
+		s.Grpc, err = qgrpc.New(opts.Grpc.Conf, opts.Grpc.GrpcRegisterFunc)
 		if err != nil {
 			return
 		}
